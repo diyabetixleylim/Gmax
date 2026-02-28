@@ -1,0 +1,5 @@
+{
+  "name": "Gmax",
+  "description": "Digital Diabetes Life Ecosystem 2.0 with Gubi AI Assistant",
+  "requestFramePermissions": ["camera", "microphone"]
+}
