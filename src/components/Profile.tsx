@@ -4,7 +4,7 @@ import { User, ShieldCheck, AlertTriangle, Settings, ChevronRight, LogOut, Credi
 import { UserProfile } from '../types';
 import { cn } from '../utils';
 
-export const ProfileSection = () => {
+export const Profile = () => {
   const [profile, setProfile] = useState<UserProfile>({
     fullName: 'Can Bedük',
     tcNo: '12345678901',

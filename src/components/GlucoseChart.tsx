@@ -15,7 +15,7 @@ const data = [
 
 export const GlucoseChart = () => {
   return (
-    <div className="w-full h-64 bg-slate-50 rounded-2xl p-4 border border-slate-100 shadow-inner">
+    <div className="w-full h-full bg-slate-50 rounded-2xl p-4 border border-slate-100 shadow-inner">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Glukoz Trendi (mg/dL)</h3>
         <div className="flex items-center gap-2">

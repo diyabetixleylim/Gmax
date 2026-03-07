@@ -11,7 +11,16 @@ export interface Message {
   timestamp: Date;
 }
 
-export type AppTab = 'dashboard' | 'twin' | 'community' | 'chat' | 'emotions' | 'profile' | 'nutrition';
+export type AppTab = 'dashboard' | 'nutrition' | 'chat' | 'twin' | 'community' | 'emotions' | 'profile' | 'emergency' | 'notifications';
+
+export interface Reminder {
+  id: string;
+  type: 'insulin' | 'medication';
+  name: string;
+  time: string;
+  dosage: string;
+  completed: boolean;
+}
 
 export interface UserProfile {
   fullName: string;
@@ -22,9 +31,11 @@ export interface UserProfile {
 }
 
 export interface EmotionEntry {
-  text: string;
+  id: string;
+  emotion: string;
   color: string;
   date: string;
+  note: string;
 }
 
 export interface CommunityItem {
@@ -33,4 +44,13 @@ export interface CommunityItem {
   title: string;
   distance: string;
   status: 'available' | 'requested';
+  user: string;
+  description?: string;
+}
+
+export interface FoodEntry {
+  id: string;
+  name: string;
+  kh: number;
+  timestamp: string;
 }

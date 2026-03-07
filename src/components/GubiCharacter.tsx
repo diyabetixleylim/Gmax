@@ -2,73 +2,100 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { cn } from '../utils';
 
-export const GubiCharacter = ({ size = 'md', className = '', mood = 'happy' }: { size?: 'sm' | 'md' | 'lg', className?: string, mood?: 'happy' | 'thinking' | 'neutral' }) => {
+export type GubiMood = 'happy' | 'worried' | 'angry' | 'thinking' | 'neutral' | 'witty';
+
+export const GubiCharacter = ({ size = 'md', className = '', mood = 'happy' }: { size?: 'sm' | 'md' | 'lg', className?: string, mood?: GubiMood }) => {
   const sizes = {
     sm: 'w-12 h-16',
     md: 'w-24 h-32',
     lg: 'w-48 h-64'
   };
 
+  const getMoodColors = () => {
+    switch (mood) {
+      case 'worried': return { body: 'bg-amber-400', border: 'border-amber-300/20', glow: 'bg-amber-500/20' };
+      case 'angry': return { body: 'bg-red-400', border: 'border-red-300/20', glow: 'bg-red-500/20' };
+      case 'thinking': return { body: 'bg-purple-400', border: 'border-purple-300/20', glow: 'bg-purple-500/20' };
+      case 'witty': return { body: 'bg-emerald-400', border: 'border-emerald-300/20', glow: 'bg-emerald-500/20' };
+      default: return { body: 'bg-blue-400', border: 'border-blue-300/20', glow: 'bg-blue-500/20' };
+    }
+  };
+
+  const colors = getMoodColors();
+
   return (
     <motion.div 
       initial={{ y: 0 }}
-      animate={{ y: [0, -15, 0] }}
+      animate={{ y: [0, -12, 0] }}
       transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       className={cn("relative flex items-center justify-center", sizes[size], className)}
     >
-      {/* Ground Glow (as seen in image) */}
-      <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-[120%] h-4 bg-blue-500/20 blur-xl rounded-full" />
+      {/* Ground Glow/Shadow */}
+      <div className={cn("absolute -bottom-10 left-1/2 -translate-x-1/2 w-[100%] h-6 blur-2xl rounded-full opacity-40", colors.glow)} />
       
-      {/* Body - Smooth pill shape */}
-      <div className="relative w-full h-full bg-blue-400 rounded-[45%] shadow-[inset_0_-20px_40px_rgba(30,58,138,0.4),0_20px_50px_rgba(59,130,246,0.2)] border border-blue-300/20 overflow-visible flex flex-col items-center justify-center">
+      {/* Body - Pear Shape Blob */}
+      <div className={cn(
+        "relative w-full h-full rounded-[55%_55%_45%_45%] shadow-[inset_0_-25px_50px_rgba(30,58,138,0.3),inset_0_15px_30px_rgba(255,255,255,0.4),0_20px_40px_rgba(59,130,246,0.15)] overflow-visible flex flex-col items-center justify-center border-t border-white/30", 
+        colors.body
+      )}>
         
-        {/* Visor Area (Almond shape from image) */}
-        <div className="absolute top-[15%] w-[75%] h-[28%] bg-slate-950 rounded-[50%_50%_45%_45%] flex flex-col items-center justify-center border border-blue-400/30 shadow-[inset_0_0_15px_rgba(0,0,0,0.8)]">
-          <div className="flex justify-around w-full px-4 mb-0.5">
-            {/* Glowing Eyes */}
+        {/* Visor Area - Recessed */}
+        <div className="absolute top-[20%] w-[65%] h-[24%] bg-slate-950 rounded-[40%_40%_35%_35%] border border-blue-400/10 shadow-[inset_0_4px_12px_rgba(0,0,0,0.9),0_2px_4px_rgba(255,255,255,0.1)] z-10 overflow-hidden">
+          {/* Eyes Container */}
+          <div className="absolute top-[25%] left-0 right-0 flex justify-center gap-4">
             <motion.div 
-              animate={{ scaleY: [1, 0.1, 1] }}
-              transition={{ repeat: Infinity, duration: 5, times: [0, 0.05, 0.1] }}
-              className="w-2.5 h-2.5 bg-white rounded-full shadow-[0_0_12px_rgba(255,255,255,1),0_0_20px_rgba(59,130,246,0.5)]" 
+              animate={{ opacity: [0.9, 1, 0.9] }}
+              transition={{ duration: 3, repeat: Infinity }}
+              className="w-2.5 h-2.5 bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,1)]" 
             />
             <motion.div 
-              animate={{ scaleY: [1, 0.1, 1] }}
-              transition={{ repeat: Infinity, duration: 5, times: [0, 0.05, 0.1] }}
-              className="w-2.5 h-2.5 bg-white rounded-full shadow-[0_0_12px_rgba(255,255,255,1),0_0_20px_rgba(59,130,246,0.5)]" 
+              animate={{ opacity: [0.9, 1, 0.9] }}
+              transition={{ duration: 3, repeat: Infinity }}
+              className="w-2.5 h-2.5 bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,1)]" 
             />
           </div>
           
-          {/* Simple Curved Smile (u shape from image) */}
-          <div className="flex justify-center w-full mt-0.5">
+          {/* Mouth - Simple Happy Curve */}
+          <div className="absolute bottom-[20%] left-0 right-0 flex justify-center">
             <svg 
-              width={size === 'sm' ? "8" : size === 'md' ? "12" : "24"} 
-              height={size === 'sm' ? "4" : size === 'md' ? "6" : "12"} 
+              width="12" 
+              height="6" 
               viewBox="0 0 12 6" 
               fill="none" 
-              xmlns="http://www.w3.org/2000/svg" 
-              className="opacity-90"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <path d="M2 2C2 2 4 4.5 6 4.5C8 4.5 10 2 10 2" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+              <path 
+                d="M3 2C3 2 4.5 4.5 6 4.5C7.5 4.5 9 2 9 2" 
+                stroke="white" 
+                strokeWidth="2" 
+                strokeLinecap="round"
+              />
             </svg>
           </div>
         </div>
 
-        {/* Arms (Stubby extensions from image) */}
-        <div className="absolute -left-2 top-[45%] w-6 h-12 bg-blue-400 rounded-full -rotate-12 shadow-inner" />
-        <div className="absolute -right-2 top-[45%] w-6 h-12 bg-blue-400 rounded-full rotate-12 shadow-inner" />
+        {/* Arms - Small rounded nubs */}
+        <div className={cn("absolute -left-1 top-[48%] w-5 h-10 rounded-full -rotate-12 shadow-inner opacity-90", colors.body)} />
+        <div className={cn("absolute -right-1 top-[48%] w-5 h-10 rounded-full rotate-12 shadow-inner opacity-90", colors.body)} />
 
-        {/* Watch/Sensor on the left arm (from viewer's perspective) */}
-        <div className="absolute -left-4 top-[42%] w-8 h-10 bg-slate-900 rounded-lg border border-slate-700 shadow-2xl flex flex-col items-center justify-center z-20 rotate-[-15deg]">
-          <div className="text-[8px] text-blue-300 font-mono font-black tracking-tighter">103</div>
-          <div className="w-full h-[1px] bg-slate-800 my-0.5" />
-          <div className="flex gap-0.5">
-            <div className="w-1 h-1 bg-blue-500/50 rounded-full" />
-            <div className="w-1 h-1 bg-slate-700 rounded-full" />
+        {/* Watch/Sensor - Matches reference image */}
+        <div className="absolute -left-5 top-[42%] z-20 rotate-[-12deg] flex items-center">
+          {/* Strap */}
+          <div className="absolute left-1/2 -translate-x-1/2 w-9 h-11 bg-slate-200 rounded-lg border border-slate-300 shadow-sm" />
+          {/* Device Body */}
+          <div className="relative w-8 h-9 bg-slate-900 rounded-lg border border-slate-800 shadow-xl flex flex-col items-center justify-center overflow-hidden">
+            <div className="text-[9px] text-sky-300 font-mono font-black tracking-tighter leading-none">103</div>
+            <div className="w-full h-[1px] bg-slate-800 my-0.5" />
+            <div className="flex gap-0.5">
+              <div className="w-1 h-1 bg-sky-500 rounded-full animate-pulse" />
+              <div className="w-1 h-1 bg-slate-700 rounded-full" />
+            </div>
           </div>
         </div>
 
-        {/* Subtle body highlights */}
-        <div className="absolute top-4 left-1/4 w-1/2 h-8 bg-white/10 rounded-full blur-lg" />
+        {/* Subtle 3D Highlights */}
+        <div className="absolute top-2 left-1/4 w-1/2 h-10 bg-white/20 rounded-full blur-xl pointer-events-none" />
+        <div className="absolute bottom-4 right-4 w-8 h-8 bg-blue-600/10 rounded-full blur-lg pointer-events-none" />
       </div>
     </motion.div>
   );
