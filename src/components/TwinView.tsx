@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { Activity, Utensils, Users } from 'lucide-react';
 import { GubiCharacter } from './GubiCharacter';
 import { GlucoseChart } from './GlucoseChart';
-import { Community } from './Community';
+import { Askida } from './Askida';
 
 export const TwinView = () => {
   return (
@@ -52,7 +52,7 @@ export const TwinView = () => {
       <div className="border-t border-sky-100 pt-10">
         <h3 className="text-xl font-black text-sky-900 mb-2 uppercase tracking-tight">P2P Yardımlaşma</h3>
         <p className="text-xs text-sky-700/60 mb-8 font-medium">Malzeme paylaşımı için güvenli iletişim alanı.</p>
-        <Community hideHeader />
+        <Askida />
       </div>
     </motion.div>
   );

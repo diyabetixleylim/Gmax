@@ -42,6 +42,14 @@ export const GmaxDashboard = () => {
     return "Harikasın! Şekerin tam istediğimiz gibi, böyle devam et! 🌟";
   };
 
+  const getGlucoseColor = (val: number) => {
+    if (val < 70) return "#ef4444"; // Low Red
+    if (val < 90) return "#f59e0b"; // Low Yellow
+    if (val <= 160) return "#10b981"; // Target Green
+    if (val <= 240) return "#f59e0b"; // High Yellow
+    return "#ef4444"; // High Red
+  };
+
   const pieData = [
     { name: 'Current', value: glucose },
     { name: 'Remaining', value: Math.max(0, 300 - glucose) }
@@ -105,7 +113,8 @@ export const GmaxDashboard = () => {
               key={glucose}
               initial={{ y: 10, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              className="text-7xl font-black text-sky-900 tracking-tighter"
+              className="text-7xl font-black tracking-tighter transition-colors duration-500"
+              style={{ color: getGlucoseColor(glucose) }}
             >
               {glucose}
             </motion.span>
@@ -143,8 +152,36 @@ export const GmaxDashboard = () => {
                 >
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart width={200} height={200}>
+                      {/* Background Gauge with Zones */}
                       <Pie
-                        data={pieData}
+                        data={[
+                          { value: 70, color: '#ef4444' }, // Low Red
+                          { value: 20, color: '#f59e0b' }, // Low Yellow
+                          { value: 70, color: '#10b981' }, // Target Green
+                          { value: 80, color: '#f59e0b' }, // High Yellow
+                          { value: 60, color: '#ef4444' }, // High Red
+                        ]}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={75}
+                        outerRadius={85}
+                        startAngle={225}
+                        endAngle={-45}
+                        paddingAngle={2}
+                        dataKey="value"
+                        stroke="none"
+                      >
+                        { [0,1,2,3,4].map((i) => (
+                          <Cell key={i} fill={[ '#ef4444', '#f59e0b', '#10b981', '#f59e0b', '#ef4444' ][i]} opacity={0.2} />
+                        ))}
+                      </Pie>
+                      
+                      {/* Active Value Arc */}
+                      <Pie
+                        data={[
+                          { value: glucose },
+                          { value: 300 - glucose }
+                        ]}
                         cx="50%"
                         cy="50%"
                         innerRadius={70}
@@ -155,13 +192,43 @@ export const GmaxDashboard = () => {
                         dataKey="value"
                         stroke="none"
                       >
-                        <Cell fill="#0ea5e9" />
-                        <Cell fill="#f1f5f9" />
+                        <Cell 
+                          fill={getGlucoseColor(glucose)} 
+                          style={{ 
+                            transition: 'fill 0.5s ease',
+                            filter: `drop-shadow(0 0 8px ${getGlucoseColor(glucose)}44)`
+                          }}
+                        />
+                        <Cell fill="transparent" />
+                      </Pie>
+
+                      {/* Needle Indicator */}
+                      <Pie
+                        data={[
+                          { value: 1 },
+                          { value: 299 }
+                        ]}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={65}
+                        outerRadius={95}
+                        startAngle={225 - (glucose / 300) * 270}
+                        endAngle={225 - (glucose / 300) * 270 - 2}
+                        dataKey="value"
+                        stroke="none"
+                      >
+                        <Cell fill="#1e293b" />
+                        <Cell fill="transparent" />
                       </Pie>
                     </PieChart>
                   </ResponsiveContainer>
                   <div className="absolute inset-0 flex flex-col items-center justify-center pt-4">
-                    <span className="text-5xl font-black text-sky-900 tracking-tighter">{glucose}</span>
+                    <span 
+                      className="text-5xl font-black tracking-tighter transition-colors duration-500"
+                      style={{ color: getGlucoseColor(glucose) }}
+                    >
+                      {glucose}
+                    </span>
                     <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest">mg/dL</span>
                   </div>
                 </motion.div>

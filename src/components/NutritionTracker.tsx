@@ -142,6 +142,12 @@ export const NutritionTracker = () => {
             <span className="text-6xl font-black text-sky-900 tracking-tighter">{totalKH}</span>
             <span className="text-sky-600 font-bold mb-2">gram</span>
           </div>
+          {totalKH > 0 && (
+            <div className="mt-2 flex items-center gap-2 text-emerald-600">
+              <Activity className="w-4 h-4" />
+              <span className="text-sm font-black italic">Tahmini Doz: {calculateInsulin()} Ünite</span>
+            </div>
+          )}
           <div className="mt-6 flex gap-3">
             <button 
               onClick={() => setShowCalculator(true)}

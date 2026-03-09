@@ -13,16 +13,25 @@ import {
   Activity, 
   Menu,
   AlertCircle,
-  ChevronRight
+  ChevronRight,
+  Video,
+  Calendar
 } from 'lucide-react';
 import { GmaxDashboard } from './components/GmaxDashboard';
 import { NutritionTracker } from './components/NutritionTracker';
 import { GubiChat } from './components/GubiChat';
 import { TwinView } from './components/TwinView';
-import { Community } from './components/Community';
+import { TwitterFeed } from './components/TwitterFeed';
+import { OpenInsulinBlog } from './components/OpenInsulinBlog';
+import { DoctorContact } from './components/DoctorContact';
+import { Askida } from './components/Askida';
+import { Recipes } from './components/Recipes';
+import { Map } from './components/Map';
 import { EmotionJar } from './components/EmotionJar';
 import { Profile } from './components/Profile';
 import { Reminders } from './components/Reminders';
+import { DietitianArea } from './components/DietitianArea';
+import { MedicationAlarm } from './components/MedicationAlarm';
 import { AppTab, UserProfile } from './types';
 import { cn } from './utils';
 
@@ -36,6 +45,64 @@ const App = () => {
     diabetesType: 'Tip 1',
     diagnosisDate: '2015-06-12'
   });
+  const [alerts, setAlerts] = useState<any[]>([]);
+
+  useEffect(() => {
+    const checkAlerts = () => {
+      const newAlerts = [];
+      const now = new Date();
+      
+      // Check Medications
+      const savedMeds = localStorage.getItem('gmax_meds');
+      if (savedMeds) {
+        const meds = JSON.parse(savedMeds);
+        meds.forEach((med: any) => {
+          const expiry = new Date(med.expiry);
+          const diffDays = Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+          
+          if (diffDays === 5 || diffDays === 3 || diffDays === 1) {
+            newAlerts.push({
+              id: `med-${med.id}-${diffDays}`,
+              type: 'medication',
+              title: 'İlaç Bitiyor!',
+              desc: `${med.name} için son ${diffDays} gün.`,
+              icon: AlertCircle,
+              color: 'text-red-600',
+              bgColor: 'bg-red-100'
+            });
+          }
+        });
+      }
+
+      // Check Appointments
+      const savedApps = localStorage.getItem('gmax_apps');
+      if (savedApps) {
+        const apps = JSON.parse(savedApps);
+        apps.forEach((app: any) => {
+          const appDate = new Date(app.date);
+          const diffDays = Math.ceil((appDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+          
+          if (diffDays <= 14 && diffDays > 0) {
+            newAlerts.push({
+              id: `app-${app.id}`,
+              type: 'appointment',
+              title: 'Yaklaşan Randevu',
+              desc: `${app.title} randevuna ${diffDays} gün kaldı.`,
+              icon: Calendar,
+              color: 'text-amber-600',
+              bgColor: 'bg-amber-100'
+            });
+          }
+        });
+      }
+
+      setAlerts(newAlerts);
+    };
+
+    checkAlerts();
+    const interval = setInterval(checkAlerts, 3600000); // Check every hour
+    return () => clearInterval(interval);
+  }, []);
 
   const openPanel = (tab: AppTab) => {
     setPanelContent(tab);
@@ -54,11 +121,37 @@ const App = () => {
       case 'nutrition': return <NutritionTracker />;
       case 'chat': return <GubiChat />;
       case 'twin': return <TwinView />;
-      case 'community': return <Community />;
+      case 'community': return <TwitterFeed />;
+      case 'blog': return <OpenInsulinBlog />;
+      case 'doctor': return <DoctorContact />;
+      case 'askida': return <Askida />;
+      case 'recipes': return <Recipes />;
+      case 'map': return <Map />;
       case 'emotions': return <EmotionJar />;
-      case 'emergency': return <Community initialView="emergency" />;
+      case 'emergency': return <Askida />;
+      case 'dietitian': return <DietitianArea />;
       case 'notifications': return <div className="space-y-4">
         <h3 className="text-lg font-black text-sky-900 uppercase tracking-tight mb-4">Bildirimler</h3>
+        {alerts.length === 0 && (
+          <div className="text-center py-12">
+            <Bell className="w-12 h-12 text-slate-200 mx-auto mb-4" />
+            <p className="text-slate-400 text-sm font-medium">Şu an için yeni bir bildirim yok.</p>
+          </div>
+        )}
+        {alerts.map((alert) => {
+          const Icon = alert.icon;
+          return (
+            <div key={alert.id} className="bg-white p-4 rounded-2xl border border-sky-100 shadow-sm flex items-center gap-4">
+              <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", alert.bgColor, alert.color)}>
+                <Icon className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-slate-900">{alert.title}</p>
+                <p className="text-xs text-slate-500">{alert.desc}</p>
+              </div>
+            </div>
+          );
+        })}
         <div className="bg-white p-4 rounded-2xl border border-sky-100 shadow-sm flex items-center gap-4">
           <div className="w-10 h-10 bg-sky-100 rounded-xl flex items-center justify-center text-sky-600">
             <Bell className="w-5 h-5" />
@@ -66,15 +159,6 @@ const App = () => {
           <div>
             <p className="text-sm font-bold text-slate-900">Şekerin Yükseliyor!</p>
             <p className="text-xs text-slate-500">Gubi biraz yürüyüş öneriyor.</p>
-          </div>
-        </div>
-        <div className="bg-white p-4 rounded-2xl border border-sky-100 shadow-sm flex items-center gap-4">
-          <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600">
-            <Heart className="w-5 h-5" />
-          </div>
-          <div>
-            <p className="text-sm font-bold text-slate-900">Harika Gidiyorsun!</p>
-            <p className="text-xs text-slate-500">Bugün duygu kavanozun çok renkli.</p>
           </div>
         </div>
       </div>;
@@ -86,12 +170,19 @@ const App = () => {
   const tabs = [
     { id: 'dashboard', label: 'Ana Sayfa', icon: LayoutDashboard },
     { id: 'nutrition', label: 'Beslenme', icon: Utensils },
+    { id: 'community', label: 'Topluluk', icon: Users },
     { id: 'chat', label: 'Gubi', icon: MessageSquare },
   ];
 
   const sideTabs = [
     { id: 'twin', label: 'İkizim', icon: Activity, desc: 'Metabolik dijital ikizini görüntüle' },
-    { id: 'community', label: 'Askıda Malzeme', icon: Users, desc: 'Yardımlaşma ve malzeme paylaşımı' },
+    { id: 'community', label: 'Topluluk', icon: Users, desc: 'Sohbet et ve paylaşım yap' },
+    { id: 'blog', label: 'Açık İnsülin', icon: Heart, desc: 'Blog ve uzman yazıları' },
+    { id: 'doctor', label: 'Doktorumla İletişim', icon: MessageSquare, desc: 'Doktorunla mesajlaş ve randevularını gör' },
+    { id: 'askida', label: 'Askıda Malzeme', icon: Heart, desc: 'Malzeme yardımlaşma alanı' },
+    { id: 'recipes', icon: Utensils, label: 'Tarifler', desc: 'Düşük KHlı yemek tarifleri' },
+    { id: 'map', icon: Activity, label: 'Harita', desc: 'Güvenli buluşma noktaları' },
+    { id: 'dietitian', label: 'Diyetisyen', icon: Video, desc: 'KH sayımı ve eğitim videoları' },
     { id: 'emotions', label: 'Duygu Kavanozu', icon: Heart, desc: 'Duygu durumunu takip et' },
     { id: 'emergency', label: 'Acil İnsülin', icon: AlertCircle, desc: 'Acil durum yardımı talep et' },
     { id: 'notifications', label: 'Bildirimler', icon: Bell, desc: 'Önemli güncellemeler ve uyarılar' },
@@ -100,6 +191,7 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-sky-100 selection:text-sky-900 overflow-x-hidden">
+      <MedicationAlarm />
       {/* Mobile-First Header */}
       <header className="fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-xl border-b border-sky-100/50 z-40 flex items-center justify-between px-6">
         <div className="flex items-center gap-3">
@@ -192,7 +284,10 @@ const App = () => {
                       return (
                         <button
                           key={tab.id}
-                          onClick={() => setPanelContent(tab.id as AppTab)}
+                          onClick={() => {
+                            setActiveTab(tab.id as AppTab);
+                            closePanel();
+                          }}
                           className="w-full flex items-center gap-4 p-4 bg-white hover:bg-sky-50 rounded-2xl border border-sky-100/50 transition-all group"
                         >
                           <div className="p-3 bg-sky-50 group-hover:bg-white rounded-xl text-sky-600 transition-colors">
@@ -289,8 +384,8 @@ const App = () => {
                 {[
                   { id: 'emotions', icon: Heart, label: 'Duygu', color: 'bg-pink-500', x: -95, y: -30 },
                   { id: 'emergency', icon: AlertCircle, label: 'Acil', color: 'bg-red-500', x: -45, y: -95 },
-                  { id: 'community', icon: Users, label: 'Askıda', color: 'bg-emerald-500', x: 45, y: -95 },
-                  { id: 'twin', icon: Activity, label: 'İkizim', color: 'bg-sky-500', x: 95, y: -30 },
+                  { id: 'community', icon: Users, label: 'Topluluk', color: 'bg-sky-500', x: 45, y: -95 },
+                  { id: 'doctor', icon: MessageSquare, label: 'Doktorum', color: 'bg-emerald-500', x: 95, y: -30 },
                 ].map((item, index) => (
                   <motion.button
                     key={item.id}

@@ -11,7 +11,34 @@ export interface Message {
   timestamp: Date;
 }
 
-export type AppTab = 'dashboard' | 'nutrition' | 'chat' | 'twin' | 'community' | 'emotions' | 'profile' | 'emergency' | 'notifications';
+export type AppTab = 'dashboard' | 'nutrition' | 'chat' | 'twin' | 'community' | 'emotions' | 'profile' | 'emergency' | 'notifications' | 'dietitian' | 'blog' | 'doctor' | 'askida' | 'recipes' | 'map';
+
+export interface Tweet {
+  id: string;
+  user: string;
+  avatar: string;
+  content: string;
+  timestamp: string;
+  likes: number;
+  comments: number;
+}
+
+export interface BlogPost {
+  id: string;
+  title: string;
+  author: string;
+  role: 'admin' | 'doctor';
+  content: string;
+  date: string;
+  image?: string;
+}
+
+export interface DoctorMessage {
+  id: string;
+  sender: 'patient' | 'doctor';
+  text: string;
+  timestamp: string;
+}
 
 export interface Reminder {
   id: string;
@@ -28,6 +55,8 @@ export interface UserProfile {
   allergies: string;
   birthDate: string;
   weight: string;
+  diabetesType?: string;
+  diagnosisDate?: string;
 }
 
 export interface EmotionEntry {
